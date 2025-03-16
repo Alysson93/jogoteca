@@ -1,6 +1,7 @@
-from flask import render_template, request, redirect, session, flash
+from flask import send_from_directory, render_template, request, redirect, session, flash
 from jogoteca import app, db
 from models import Usuarios, Jogos
+from config import UPLOAD_PATH
 
 @app.route('/')
 def root():
@@ -20,6 +21,8 @@ def novo():
         )
         db.session.add(jogo)
         db.session.commit()
+        imagem = request.files['imagem']
+        imagem.save(f'{UPLOAD_PATH}/capa_{jogo.id}.jpg')
         flash(f'Jogo adicionado com sucesso.', 'success')
         return redirect('/')
     else:
@@ -82,3 +85,8 @@ def logout():
     session['usuario_logado'] = None
     flash('Você saiu da sua conta com êxito', 'success')
     return redirect('/')
+
+
+@app.route('/uploads/<nome_arquivo>')
+def imagem(nome_arquivo):
+    return send_from_directory('uploads', nome_arquivo)
