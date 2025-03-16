@@ -7,12 +7,16 @@
             <td>Nome</td>
             <td>Categoria</td>
             <td>Console</td>
+            <td></td>
+            <td></td>
         </tr>
         {% for jogo in jogos %}
             <tr>
                 <td>{{jogo.nome}}</td>
                 <td>{{jogo.categoria}}</td>
                 <td>{{jogo.console}}</td>
+                <td><a href="/editar/{{jogo.id}}">Editar</a></td>
+                <td><form method="post" action="/deletar/{{jogo.id}}"><input type="submit" value="Deletar"></form></td>
             </tr>
         {% endfor %}
     </table>
