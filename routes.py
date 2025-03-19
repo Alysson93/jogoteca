@@ -2,6 +2,8 @@ from flask import send_from_directory, render_template, request, redirect, sessi
 from jogoteca import app, db
 from models import Usuarios, Jogos
 from config import UPLOAD_PATH
+from helpers import recupera_imagem, deleta_arquivo
+import time
 
 @app.route('/')
 def root():
@@ -22,7 +24,8 @@ def novo():
         db.session.add(jogo)
         db.session.commit()
         imagem = request.files['imagem']
-        imagem.save(f'{UPLOAD_PATH}/capa_{jogo.id}.jpg')
+        timestamp = time.time()
+        imagem.save(f'{UPLOAD_PATH}/capa_{jogo.id}-{timestamp}.jpg')
         flash(f'Jogo adicionado com sucesso.', 'success')
         return redirect('/')
     else:
@@ -37,15 +40,20 @@ def editar(id: int):
     jogo = Jogos.query.filter_by(id = id).first()
     if not jogo:
         return redirect('/')
+    capa_jogo = recupera_imagem(id)
     if request.method == 'POST':
-        jogo.nome = request.form['nome'],
-        jogo.categoria = request.form['categoria'],
+        jogo.nome = request.form['nome']
+        jogo.categoria = request.form['categoria']
         jogo.console = request.form['console']
         db.session.commit()
+        imagem = request.files['imagem']
+        timestamp = time.time()
+        deleta_arquivo(jogo.id)
+        imagem.save(f'{UPLOAD_PATH}/capa_{jogo.id}-{timestamp}.jpg')
         flash(f'Jogo editado com sucesso.', 'success')
         return redirect('/')
     else:
-        return render_template('editar.html', jogo=jogo)
+        return render_template('editar.html', jogo=jogo, capa_jogo=capa_jogo)
 
 
 @app.route('/deletar/<int:id>', methods=['POST'])

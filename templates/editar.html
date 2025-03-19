@@ -2,7 +2,14 @@
 
 {% block body %}
     <h1>Editar jogo</h1>
-    <form method="post" action="">
+    <form method="post" action="" enctype="multipart/form-data">
+        <figure>
+            <img width="50" height="50" src="{{url_for('imagem', nome_arquivo=capa_jogo)}}">
+            <figcaption>
+                <label>Mudar capa</label>
+                <input type="file" accept=".jpg" name="imagem">
+            </figcaption>
+        </figure>
         <input type="text" name="nome" placeholder="Nome" value="{{jogo.nome}}" required>
         <input type="text" name="categoria" placeholder="Categoria" value="{{jogo.categoria}}" required>
         <input type="text" name="console" placeholder="Console" value="{{jogo.console}}" required>
