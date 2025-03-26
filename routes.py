@@ -2,7 +2,7 @@ from flask import send_from_directory, render_template, request, redirect, sessi
 from jogoteca import app, db
 from models import Usuarios, Jogos
 from config import UPLOAD_PATH
-from helpers import recupera_imagem, deleta_arquivo
+from helpers import recupera_imagem, deleta_arquivo, FormJogo
 import time
 
 @app.route('/')
@@ -16,10 +16,13 @@ def novo():
         flash('Você precisa estar logado para efetuar esta operação', 'danger')
         return redirect('/login?proxima=novo')
     if request.method == 'POST':
+        form = FormJogo(request.form)
+        if not form.validate_on_submit():
+            return redirect('/novo')
         jogo = Jogos(
-            nome=request.form['nome'],
-            categoria=request.form['categoria'],
-            console=request.form['console']
+            nome=form.nome.data,
+            categoria=form.categoria.data,
+            console=form.console.data
         )
         db.session.add(jogo)
         db.session.commit()
@@ -29,22 +32,26 @@ def novo():
         flash(f'Jogo adicionado com sucesso.', 'success')
         return redirect('/')
     else:
-        return render_template('novo.html')
+        form = FormJogo()
+        return render_template('novo.html', form=form)
 
 
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
 def editar(id: int):
     if 'usuario_logado' not in session or not session['usuario_logado']:
         flash('Você precisa estar logado para efetuar esta operação', 'danger')
-        return redirect('/login?proxima=editar')
+        return redirect(f'/login?proxima=editar/{id}')
     jogo = Jogos.query.filter_by(id = id).first()
     if not jogo:
         return redirect('/')
     capa_jogo = recupera_imagem(id)
     if request.method == 'POST':
-        jogo.nome = request.form['nome']
-        jogo.categoria = request.form['categoria']
-        jogo.console = request.form['console']
+        form = FormJogo(request.form)
+        if not form.validate_on_submit():
+            return redirect(f'/editar/{id}')
+        jogo.nome = form.nome.data
+        jogo.categoria = form.categoria.data
+        jogo.console = form.console.data
         db.session.commit()
         imagem = request.files['imagem']
         timestamp = time.time()
@@ -53,7 +60,8 @@ def editar(id: int):
         flash(f'Jogo editado com sucesso.', 'success')
         return redirect('/')
     else:
-        return render_template('editar.html', jogo=jogo, capa_jogo=capa_jogo)
+        form = FormJogo(request.form)
+        return render_template('editar.html', jogo=jogo, capa_jogo=capa_jogo, form=form)
 
 
 @app.route('/deletar/<int:id>', methods=['POST'])
@@ -73,6 +81,8 @@ def deletar(id: int):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     proxima = request.args.get('proxima') or ''
+    if 'usuario_logado' in session and session['usuario_logado'] != None:
+        return redirect('/')
     if request.method == 'POST':
         email = request.form['email']
         usuario = Usuarios.query.filter_by(email=email).first()

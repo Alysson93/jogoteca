@@ -9,9 +9,13 @@
                 <input type="file" accept=".jpg" name="imagem">
             </figcaption>
         </figure>
-        <input type="text" name="nome" placeholder="Nome" required>
-        <input type="text" name="categoria" placeholder="Categoria" required>
-        <input type="text" name="console" placeholder="Console" required>
-        <input type="submit" value="Cadastrar">
+        {{ form.nome.label(class='form-label') }}
+        {{ form.nome(class='form-control') }}
+        {{ form.categoria.label(class='form-label') }}
+        {{ form.categoria(class='form-control') }}
+        {{ form.console.label(class='form-label') }}
+        {{ form.console(class='form-control') }}
+        {{ form.salvar(class='btn btn-primary') }}
     </form>
+    <a class="btn btn-danger" href="{{url_for('root')}}">Voltar</a>
 {% endblock body %}

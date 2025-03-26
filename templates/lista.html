@@ -2,6 +2,11 @@
 
 {% block body %}
     <h1>{{title}}</h1>
+
+    <a class="btn btn-primary" href="{{url_for('login')}}">Login</a>
+    <a class="btn btn-danger" href="{{url_for('logout')}}">Logout</a>
+    <a class="btn btn-primary" href="{{url_for('novo')}}">Novo jovo</a>
+
     <table class="table">
         <tr>
             <td>Nome</td>
