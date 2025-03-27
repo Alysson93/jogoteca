@@ -2,9 +2,13 @@
 
 {% block body %}
     <form method="post" action="">
-        <input type="text" name="nome" placeholder="Nome" required>
-        <input type="email" name="email" placeholder="E-mail" required>
-        <input type="password" name="senha" placeholder="Senha" required>
-        <input type="submit" value="Acessar">
+        {{ form.csrf_token() }}
+        {{ form.nome.label(class='form-label') }}
+        {{ form.nome(class='form-control') }}
+        {{ form.email.label(class='form-label') }}
+        {{ form.email(class='form-control') }}
+        {{ form.senha.label(class='form-label') }}
+        {{ form.senha(class='form-control') }}
+        {{ form.login(class='btn btn-primary') }}
     </form>
 {% endblock body %}

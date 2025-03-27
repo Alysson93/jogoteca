@@ -2,6 +2,7 @@
 
 {% block body %}
     <form method="post" action="" enctype="multipart/form-data">
+        {{ form.csrf_token() }}
         <figure>
             <img width="50" height="50" src="{{url_for('imagem', nome_arquivo='capa_default.jpg')}}">
             <figcaption>

@@ -2,7 +2,7 @@ from flask import send_from_directory, render_template, request, redirect, sessi
 from jogoteca import app, db
 from models import Usuarios, Jogos
 from config import UPLOAD_PATH
-from helpers import recupera_imagem, deleta_arquivo, FormJogo
+from helpers import recupera_imagem, deleta_arquivo, FormJogo, FormUsuario
 import time
 
 @app.route('/')
@@ -60,8 +60,11 @@ def editar(id: int):
         flash(f'Jogo editado com sucesso.', 'success')
         return redirect('/')
     else:
-        form = FormJogo(request.form)
-        return render_template('editar.html', jogo=jogo, capa_jogo=capa_jogo, form=form)
+        form = FormJogo()
+        form.nome.data = jogo.nome
+        form.categoria.data = jogo.categoria
+        form.console.data = jogo.console
+        return render_template('editar.html', capa_jogo=capa_jogo, form=form)
 
 
 @app.route('/deletar/<int:id>', methods=['POST'])
@@ -84,9 +87,12 @@ def login():
     if 'usuario_logado' in session and session['usuario_logado'] != None:
         return redirect('/')
     if request.method == 'POST':
-        email = request.form['email']
+        form = FormUsuario(request.form)
+        if not form.validate_on_submit():
+            return redirect('/login')
+        email = form.email.data
         usuario = Usuarios.query.filter_by(email=email).first()
-        if usuario and request.form['senha'] == usuario.senha:
+        if usuario and form.senha.data == usuario.senha:
             session['usuario_logado'] = request.form['nome']
             name = session['usuario_logado']
             flash(f'Usuário {name} logado com sucesso.', 'success')
@@ -95,7 +101,8 @@ def login():
             flash('Usuário não logado', 'danger')
             return redirect('/login')
     else:
-        return render_template('login.html')
+        form = FormUsuario()
+        return render_template('login.html', form=form)
 
 
 @app.route('/logout')
