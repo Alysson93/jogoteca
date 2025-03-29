@@ -2,8 +2,8 @@ import os
 
 SECRET_KEY = 'secret'
 
-SQLALCHEMY_DATABASE_URI = \
-    'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), 'database.db')
+# SQLALCHEMY_DATABASE_URI = \
+#     'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), 'database.db')
 
 # SQLALCHEMY_DATABASE_URI = \
 #     'postgresql+psycopg2://postgres:password@localhost/jogoteca'
